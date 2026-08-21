@@ -89,5 +89,78 @@ HACCP 관점에서 공정별 위험요인, 관리 방법, 확인 기록 예시�
     async function downloadPDFReport(){const button=document.querySelector('#downloadPdf');if(!report){notice('먼저 분석할 프롬프트를 입력하세요.');return}button.disabled=true;button.textContent='PDF 생성 중…';let node;try{await loadReportLibrary('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',()=>typeof window.html2canvas==='function');await loadReportLibrary('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf&&window.jspdf.jsPDF);node=buildPDFReport();const canvas=await window.html2canvas(node,{scale:2,backgroundColor:'#fffdf7'});const image=canvas.toDataURL('image/png');const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});const margin=12,width=186,height=canvas.height*width/canvas.width,pageHeight=273;let remaining=height,position=margin;pdf.addImage(image,'PNG',margin,position,width,height,'report-image','FAST');remaining-=pageHeight;while(remaining>0){position=margin-(height-remaining);pdf.addPage();pdf.addImage(image,'PNG',margin,position,width,height,'report-image','FAST');remaining-=pageHeight}pdf.save('prompt-mirror-analysis-report.pdf');notice('PDF 보고서를 저장했습니다.')}catch(error){notice('PDF 생성에 실패했습니다. 네트워크 연결을 확인한 뒤 다시 시도하세요.')}finally{if(node)node.remove();button.disabled=false;button.textContent='PDF 보고서'}}
     document.querySelector('#downloadPdf').addEventListener('click',downloadPDFReport);
   </script>
+  <script>
+    (function(){
+      const promptField=document.querySelector('#prompt');
+      const diagnosis=document.querySelector('.diagnosis');
+      const developerPanel=document.createElement('section');
+      developerPanel.id='developerDiagnostics';
+      developerPanel.style.cssText='display:none;margin-top:24px;border:1px solid #142031;background:#fffdf7;box-shadow:5px 5px 0 #142031';
+      diagnosis.parentNode.insertBefore(developerPanel,diagnosis);
+
+      function developerMetrics(value){
+        const text=value.trim();
+        const isDevelopment=/(코드|개발|프로그래밍|버그|디버그|에러|오류|함수|클래스|라이브러리|패키지|프레임워크|컴파일|스택\s*트레이스|javascript|typescript|python|java|react|node\.?js|vue|sql|api|git|npm|docker|build|compile|stack trace|exception|traceback)/i.test(text);
+        if(!isDevelopment)return {isDevelopment:false};
+        const hasSnippet=/```|(?:^|\n)\s*(?:const|let|var|function|class|import|export|def|SELECT|INSERT|UPDATE|CREATE|npm |git )/im.test(text);
+        const hasFile=/[\w./-]+\.(?:js|ts|tsx|jsx|py|java|cs|go|rs|sql|html|css|json|yml|yaml|md)\b/i.test(text);
+        const hasEnvironment=/(node|npm|pnpm|yarn|python|react|next\.?js|vite|windows|macos|linux|docker|version|버전|환경|브라우저|os)/i.test(text);
+        const hasExpected=/(기대|예상|원하는 동작|되어야|should|expected|want|원인|수정|해결|fix|debug)/i.test(text);
+        const contextScore=(hasSnippet?40:0)+(hasFile?25:0)+(hasEnvironment?20:0)+(hasExpected?15:0);
+        const errorPattern=/(error|exception|stack trace|traceback|TypeError|ReferenceError|SyntaxError|HTTP\s*[45]\d\d|failed|cannot |undefined|null|오류|에러|예외|스택\s*트레이스|실패|문제)/i;
+        const fencedErrors=(text.match(/```[\s\S]*?```/g)||[]).filter(block=>errorPattern.test(block));
+        const errorLines=text.split(/\n/).filter(line=>errorPattern.test(line)&&/(TypeError|ReferenceError|SyntaxError|Error:|Exception|stack|trace|line\s+\d+|:\d+:\d+|오류\s*[:：]|에러\s*[:：]|예외\s*[:：])/i.test(line));
+        const errorExcerpt=[...fencedErrors,...errorLines].join('\n');
+        const hasError=errorExcerpt.length>0;
+        const errorShare=text.length?Math.min(100,Math.round(errorExcerpt.length/text.length*100)):0;
+        const contextNote=contextScore>=80?'코드 조각, 파일·환경, 기대 동작이 함께 있습니다.':contextScore>=45?'일부 맥락은 보이지만 파일·환경·기대 동작을 더하면 재현성이 높아집니다.':'코드 조각, 파일 경로, 실행 환경, 기대 동작 중 빠진 정보를 보태세요.';
+        const errorNote=hasError?`식별된 에러·스택 텍스트가 원문의 ${errorShare}%를 차지합니다.`:'실제 오류·스택·발생 위치가 보이지 않습니다. 해결 요청이면 원문 그대로 넣어 보세요.';
+        return {isDevelopment:true,contextScore,errorShare,hasError,contextNote,errorNote,hasSnippet,hasFile,hasEnvironment,hasExpected};
+      }
+
+      function developerRows(metrics){
+        return [
+          ['개발 · 코드 컨텍스트',true,metrics.contextScore,metrics.contextNote],
+          ['개발 · 에러 메시지 포함률',metrics.hasError,metrics.errorShare,metrics.errorNote]
+        ];
+      }
+
+      function renderDeveloperPanel(metrics){
+        if(!metrics.isDevelopment){developerPanel.style.display='none';return;}
+        developerPanel.style.display='block';
+        const contextParts=[metrics.hasSnippet?'코드 조각':'코드 조각 없음',metrics.hasFile?'파일·모듈':'파일 정보 없음',metrics.hasEnvironment?'실행 환경':'환경 정보 없음',metrics.hasExpected?'기대 동작':'기대 동작 없음'];
+        developerPanel.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;background:#142031;color:#fffdf7"><div><span style="color:#c8ff52;font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.08em">DEVELOPER PROMPT MODE</span><strong style="display:block;margin-top:3px;font:700 15px 'Noto Serif KR',serif">코딩 요청을 위한 추가 진단</strong></div><span style="padding:6px 8px;background:#c8ff52;color:#142031;font:700 10px 'IBM Plex Mono',monospace">CODE</span></div><div style="display:grid;grid-template-columns:1fr 1fr"><article style="padding:20px;border-right:1px solid #d3cbbc"><span style="color:#9c322e;font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.08em">01 / CODE CONTEXT</span><div style="display:flex;align-items:baseline;gap:7px;margin-top:8px"><strong style="font:700 34px 'IBM Plex Mono',monospace;color:#142031">${metrics.contextScore}</strong><span style="font:10px 'IBM Plex Mono',monospace;color:#66707a">/ 100</span></div><div style="height:4px;margin:8px 0 11px;background:#ded5c7"><i style="display:block;width:${metrics.contextScore}%;height:100%;background:#9c322e"></i></div><strong style="font-size:13px">코드 컨텍스트 제공 능력</strong><p style="margin:5px 0 0;color:#56606a;font-size:11px;line-height:1.65">${metrics.contextNote}</p><p style="margin:11px 0 0;color:#747772;font:10px/1.6 'IBM Plex Mono',monospace">${contextParts.join(' · ')}</p></article><article style="padding:20px"><span style="color:#9c322e;font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.08em">02 / ERROR EVIDENCE</span><div style="display:flex;align-items:baseline;gap:7px;margin-top:8px"><strong style="font:700 34px 'IBM Plex Mono',monospace;color:#142031">${metrics.errorShare}</strong><span style="font:10px 'IBM Plex Mono',monospace;color:#66707a">% OF PROMPT</span></div><div style="height:4px;margin:8px 0 11px;background:#ded5c7"><i style="display:block;width:${metrics.errorShare}%;height:100%;background:${metrics.hasError?'#9c322e':'#c7b5a9'}"></i></div><strong style="font-size:13px">에러 메시지 포함 비율</strong><p style="margin:5px 0 0;color:#56606a;font-size:11px;line-height:1.65">${metrics.errorNote}</p><p style="margin:11px 0 0;color:#747772;font:10px/1.6 'IBM Plex Mono',monospace">${metrics.hasError?'실제 오류 증거 감지됨':'오류 증거 미감지'}</p></article></div><div style="padding:10px 18px;border-top:1px solid #d3cbbc;background:#f7f2e8;color:#5c656e;font-size:10px;line-height:1.6">점수는 코드 조각·파일/모듈·실행 환경·기대 동작의 명시 여부를 읽습니다. 비율은 원문에서 식별된 실제 오류·스택 텍스트의 분량입니다.</div>`;
+      }
+
+      function refreshDeveloperMetrics(){
+        if(!report)return;
+        report.developer=developerMetrics(promptField.value);
+        renderDeveloperPanel(report.developer);
+      }
+
+      refreshDeveloperMetrics();
+      ['#analyze','#sample','#clear'].forEach(selector=>document.querySelector(selector).addEventListener('click',()=>window.setTimeout(refreshDeveloperMetrics,0)));
+
+      const markdownButton=document.querySelector('#download');
+      const markdownReplacement=markdownButton.cloneNode(true);
+      markdownButton.replaceWith(markdownReplacement);
+      markdownReplacement.addEventListener('click',()=>{
+        const developer=report.developer||developerMetrics(promptField.value);
+        const developmentSection=developer.isDevelopment?`\n## 개발 프롬프트 특화 진단\n- 코드 컨텍스트 제공 능력: ${developer.contextScore}/100 — ${developer.contextNote}\n- 에러 메시지 포함 비율: ${developer.errorShare}% — ${developer.errorNote}\n`:'';
+        const body=`# Prompt Mirror 분석 기록\n\n- 구조 점수: ${report.score}/100\n- 작성 습관: ${report.habit}\n- 글자 수: ${report.characters}\n- 단어 수: ${report.words}\n\n## 구조 진단\n${report.entries.map(item=>`- ${item[0]}: ${item[2]}/100 — ${item[3]}`).join('\n')}${developmentSection}\n## 보완 프롬프트\n\n${report.refined}`;
+        const url=URL.createObjectURL(new Blob([body],{type:'text/markdown;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='prompt-mirror-analysis-report.md';link.click();URL.revokeObjectURL(url);notice('분석 기록을 Markdown 파일로 저장했습니다.');
+      });
+
+      const pdfButton=document.querySelector('#downloadPdf');
+      const pdfReplacement=pdfButton.cloneNode(true);
+      pdfButton.replaceWith(pdfReplacement);
+      pdfReplacement.addEventListener('click',async()=>{
+        const developer=report.developer||developerMetrics(promptField.value);
+        const originalEntries=report.entries;
+        if(developer.isDevelopment)report.entries=[...originalEntries,...developerRows(developer)];
+        try{await downloadPDFReport();}finally{report.entries=originalEntries;}
+      });
+    })();
+  </script>
 </body>
 </html>
