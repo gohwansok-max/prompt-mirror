@@ -283,5 +283,53 @@ HACCP 관점에서 공정별 위험요인, 관리 방법, 확인 기록 예시�
       const installButton=document.createElement('button');installButton.id='installApp';installButton.textContent='앱 설치';installButton.style.cssText='display:inline-flex;padding:8px 10px;border:1px solid #142031;background:#142031;color:#fffdf7;font-size:10px;font-weight:700';document.querySelector('.topbar').appendChild(installButton);let deferredInstall;window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstall=event;installButton.textContent='앱 설치'});installButton.addEventListener('click',async()=>{if(deferredInstall){deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;installButton.style.display='none'}else{notice('iPhone·iPad는 Safari 공유 메뉴에서 홈 화면에 추가를 선택하세요. Android·PC는 브라우저 메뉴의 설치 기능을 사용하세요.')}});window.addEventListener('appinstalled',()=>{installButton.style.display='none';notice('Prompt Mirror를 기기에 설치했습니다.')});
     })();
   </script>
+  <script>
+    (function(){
+      const analysis=document.querySelector('#analysis');
+      const feedbackSection=document.createElement('section');
+      feedbackSection.id='aiFeedbackRequest';
+      feedbackSection.className='section';
+      analysis.insertAdjacentElement('afterend',feedbackSection);
+      let focus='balanced';
+      const focusMap={
+        balanced:'전체 품질 점검',
+        debugging:'재현 가능한 디버깅',
+        implementation:'구현 설계와 코드 품질',
+        clarity:'컨텍스트와 요구사항 명확화'
+      };
+      function requestText(){
+        const developer=report&&report.developer&&report.developer.isDevelopment?report.developer:null;
+        if(!developer)return '코딩 관련 프롬프트를 분석하면 코드 컨텍스트와 오류 증거를 바탕으로 맞춤형 AI 피드백 요청문을 생성합니다.';
+        const facts=[
+          `코드 컨텍스트 제공 능력: ${developer.contextScore}/100`,
+          `에러 메시지 포함 비율: ${developer.errorShare}%`,
+          `코드 조각: ${developer.hasSnippet?'있음':'없음'}`,
+          `파일·모듈 정보: ${developer.hasFile?'있음':'없음'}`,
+          `실행 환경: ${developer.hasEnvironment?'있음':'없음'}`,
+          `기대 동작: ${developer.hasExpected?'있음':'없음'}`
+        ];
+        const missing=[];
+        if(!developer.hasSnippet)missing.push('최소 재현 코드 또는 문제 구간');
+        if(!developer.hasFile)missing.push('파일·모듈·함수 경로');
+        if(!developer.hasEnvironment)missing.push('런타임·프레임워크·버전 정보');
+        if(!developer.hasExpected)missing.push('현재 동작과 기대 동작의 차이');
+        if(developer.errorShare===0)missing.push('실제 에러 메시지 또는 핵심 스택 트레이스');
+        const priority=focus==='debugging'?'오류 재현 경로와 가장 가능성 높은 원인을 우선순위로 제시해 주세요.':focus==='implementation'?'구현 대안, 변경 범위, 타입·테스트·성능 관점의 위험을 우선순위로 제시해 주세요.':focus==='clarity'?'답변 전에 부족한 컨텍스트를 질문 목록으로 분리하고, 그 외에는 가정하지 마세요.':'문제 재현성, 맥락, 오류 증거, 해결 절차를 균형 있게 점검해 주세요.';
+        return `당신은 시니어 소프트웨어 엔지니어이자 코드 리뷰어입니다. 아래 개발 프롬프트의 품질을 평가하고, 더 재현 가능하고 해결 가능한 요청으로 다듬도록 코칭해 주세요.\n\n[분석된 프롬프트 지표]\n${facts.map(item=>`- ${item}`).join('\n')}\n\n[현재 프롬프트]\n${prompt.value.trim()}\n\n[피드백 초점]\n${focusMap[focus]}: ${priority}\n\n[반드시 답변에 포함]\n1. 현재 프롬프트에서 잘 제공된 정보\n2. 해결 품질을 높이기 위해 가장 먼저 보완할 정보 3개\n3. 필요하면 AI가 먼저 물어봐야 할 명확화 질문\n4. 코드·에러·환경 정보를 포함한 개선된 프롬프트 초안\n5. 수정 뒤 확인할 테스트 또는 재현 절차\n\n[부족한 정보]\n${missing.length?missing.map(item=>`- ${item}`).join('\n'):'- 핵심 개발 컨텍스트가 비교적 잘 제공되었습니다. 변경 범위와 테스트 기준을 더 구체화해 주세요.'}\n\n불확실한 내용은 추측하지 말고, 필요한 질문과 가정을 구분해 한국어로 답변해 주세요.`;
+      }
+      function renderFeedback(){
+        const isDeveloper=Boolean(report&&report.developer&&report.developer.isDevelopment);
+        feedbackSection.innerHTML=`<div class="kicker"><span>02.15</span><p>PERSONALIZED AI FEEDBACK REQUEST</p></div><div class="headline"><div><h2>내 코딩 습관에 맞춘<br><em>AI 리뷰 요청문</em></h2><p>현재 프롬프트에서 읽은 코드 컨텍스트와 오류 증거를 넣어, 다른 AI에게 더 구체적인 코칭을 요청합니다.</p></div><span style="color:#9c322e;font:500 10px 'IBM Plex Mono',monospace">${isDeveloper?'LIVE CODING ANALYSIS':'CODING PROMPT REQUIRED'}</span></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;margin-top:25px;border-top:1px solid #142031;border-left:1px solid #142031"><div style="padding:16px;border-right:1px solid #142031;border-bottom:1px solid #142031;background:#f7f2e8"><span style="color:#9c322e;font:500 10px 'IBM Plex Mono',monospace">FEEDBACK FOCUS</span><div id="feedbackFocus" style="display:grid;gap:7px;margin-top:13px"></div></div><div style="min-width:0;padding:16px;border-right:1px solid #142031;border-bottom:1px solid #142031;background:#fffdf7"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><span style="color:#9c322e;font:500 10px 'IBM Plex Mono',monospace">COPY TO ANOTHER AI</span><button id="copyFeedbackRequest" style="padding:7px 9px;border:1px solid #142031;background:#142031;color:#fffdf7;font-size:10px;font-weight:700">요청문 복사</button></div><textarea id="feedbackRequestText" readonly style="display:block;width:100%;min-height:235px;margin-top:12px;padding:13px;border:1px solid #d3cbbc;resize:vertical;background:#fffdf7;color:#293848;font:11px/1.7 'Noto Sans KR',sans-serif"></textarea></div></div><div style="display:flex;align-items:center;gap:9px;margin-top:12px;color:#66717b;font-size:11px;line-height:1.6"><span style="display:grid;place-items:center;width:20px;height:20px;background:#c8ff52;color:#142031;font-weight:700">!</span><span>복사한 요청문을 Claude, Gemini, ChatGPT 등으로 보내면 현재 코딩 프롬프트의 빈칸과 개선안을 더 구체적으로 받을 수 있습니다.</span></div>`;
+        const focusPanel=feedbackSection.querySelector('#feedbackFocus');
+        focusPanel.innerHTML=Object.entries(focusMap).map(([key,label])=>`<button data-feedback-focus="${key}" style="padding:9px 10px;border:1px solid #142031;background:${focus===key?'#142031':'transparent'};color:${focus===key?'#fffdf7':'#142031'};text-align:left;font-size:11px">${label}</button>`).join('');
+        const request=feedbackSection.querySelector('#feedbackRequestText');
+        request.value=requestText();
+        focusPanel.querySelectorAll('[data-feedback-focus]').forEach(button=>button.addEventListener('click',()=>{focus=button.dataset.feedbackFocus;renderFeedback()}));
+        feedbackSection.querySelector('#copyFeedbackRequest').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(request.value);const button=feedbackSection.querySelector('#copyFeedbackRequest');button.textContent='✓ 복사됨';setTimeout(()=>button.textContent='요청문 복사',1400);notice('맞춤형 AI 피드백 요청문을 복사했습니다.')}catch{request.focus();request.select();notice('복사 권한이 필요합니다. 내용을 직접 선택해 복사하세요.')}});
+      }
+      renderFeedback();
+      ['#analyze','#sample','#clear'].forEach(selector=>document.querySelector(selector).addEventListener('click',()=>window.setTimeout(renderFeedback,0)));
+    })();
+  </script>
 </body>
 </html>
