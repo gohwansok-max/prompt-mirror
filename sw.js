@@ -1,4 +1,4 @@
-const CACHE_NAME = 'prompt-mirror-v4';
+const CACHE_NAME = 'prompt-mirror-v5';
 const CACHE_PREFIX = 'prompt-mirror-';
 const APP_SHELL = ['./', './index.html', './offline.html', './manifest.webmanifest', './icon.svg'];
 const NETWORK_TIMEOUT_MS = 3500;
