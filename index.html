@@ -331,5 +331,12 @@ HACCP 관점에서 공정별 위험요인, 관리 방법, 확인 기록 예시�
       ['#analyze','#sample','#clear'].forEach(selector=>document.querySelector(selector).addEventListener('click',()=>window.setTimeout(renderFeedback,0)));
     })();
   </script>
+  <style>
+    @media (max-width: 720px) {
+      #customTemplateForm { grid-template-columns: 1fr !important; }
+      #customTemplateForm #customTemplateBody,
+      #customTemplateForm > div { grid-column: 1 !important; }
+    }
+  </style>
 </body>
 </html>
