@@ -350,11 +350,11 @@ HACCP 관점에서 공정별 위험요인, 관리 방법, 확인 기록 예시�
   </style>
   <script>
     (function(){
-      const historyKey='prompt-mirror-analysis-history-v1',templateKey='prompt-mirror-custom-templates-v1',driveConfigKey='prompt-mirror-drive-config-v1',driveScope='https://www.googleapis.com/auth/drive.appdata',backupName='prompt-mirror-backup.json';
+      const historyKey='prompt-mirror-analysis-history-v1',templateKey='prompt-mirror-custom-templates-v1',driveConfigKey='prompt-mirror-drive-config-v1',defaultClientId='359001642002-d4r6rga5rs7jc0n19c10o6gd77n854ga.apps.googleusercontent.com',driveScope='https://www.googleapis.com/auth/drive.appdata',backupName='prompt-mirror-backup.json';
       const syncSection=document.createElement('section');syncSection.id='driveSync';syncSection.className='section';document.querySelector('#dataPortability').insertAdjacentElement('afterend',syncSection);
       let accessToken='';let status={kind:'idle',message:'Google Drive 연결 전입니다. 이 기기의 로컬 데이터는 아직 외부로 전송되지 않습니다.',backup:null};
       const readArray=key=>{try{const value=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(value)?value:[]}catch{return []}};
-      const readConfig=()=>{try{return JSON.parse(localStorage.getItem(driveConfigKey)||'{}')}catch{return {}}};const writeConfig=value=>localStorage.setItem(driveConfigKey,JSON.stringify(value));
+      const readConfig=()=>{try{return {clientId:defaultClientId,...JSON.parse(localStorage.getItem(driveConfigKey)||'{}')}}catch{return {clientId:defaultClientId}}};const writeConfig=value=>localStorage.setItem(driveConfigKey,JSON.stringify(value));
       const stamp=item=>new Date(item.updatedAt||item.createdAt||0).getTime()||0;const escapeHtml=value=>String(value||'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
       const makeDeviceId=()=>{const config=readConfig();if(config.deviceId)return config.deviceId;const deviceId=`pm-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;writeConfig({...config,deviceId});return deviceId};
       const buildBackup=()=>({format:'prompt-mirror-cloud-backup',schemaVersion:1,updatedAt:new Date().toISOString(),deviceId:makeDeviceId(),history:readArray(historyKey),customTemplates:readArray(templateKey)});
