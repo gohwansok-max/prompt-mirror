@@ -1,0 +1,14 @@
+{
+  "name": "Prompt Mirror",
+  "short_name": "Prompt Mirror",
+  "description": "개인 프롬프트 작성 습관을 분석하고 개선하는 로컬 편집 도구",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f1e8",
+  "theme_color": "#142031",
+  "icons": [
+    {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
