@@ -1,6 +1,6 @@
-const CACHE_NAME = 'prompt-mirror-v5';
+const CACHE_NAME = 'prompt-mirror-v6';
 const CACHE_PREFIX = 'prompt-mirror-';
-const APP_SHELL = ['./', './index.html', './offline.html', './manifest.webmanifest', './icon.svg'];
+const APP_SHELL = ['./', './index.html', './offline.html', './network-recovery.html', './manifest.webmanifest', './icon.svg'];
 const NETWORK_TIMEOUT_MS = 3500;
 
 const isCacheable = response => response && response.ok && response.type === 'basic';
@@ -15,10 +15,10 @@ async function networkWithTimeout(request) {
   }
 }
 
-async function cacheNavigation(response) {
+async function cacheNavigation(request, response) {
   if (!isCacheable(response)) return;
   const cache = await caches.open(CACHE_NAME);
-  await cache.put('./index.html', response.clone());
+  await cache.put(request, response.clone());
 }
 
 self.addEventListener('install', event => {
@@ -45,10 +45,10 @@ self.addEventListener('fetch', event => {
     event.respondWith((async () => {
       try {
         const response = await networkWithTimeout(request);
-        event.waitUntil(cacheNavigation(response));
+        event.waitUntil(cacheNavigation(request, response));
         return response;
       } catch {
-        return (await caches.match('./index.html')) || (await caches.match('./offline.html')) || new Response('오프라인 상태입니다. 네트워크가 연결되면 다시 시도해 주세요.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+        return (await caches.match(request, { ignoreSearch: true })) || (await caches.match('./index.html')) || (await caches.match('./offline.html')) || new Response('오프라인 상태입니다. 네트워크가 연결되면 다시 시도해 주세요.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
       }
     })());
     return;

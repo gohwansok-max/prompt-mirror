@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142031">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>네트워크 복구 안내 — Prompt Mirror</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700;900&display=swap');
+    :root{--ink:#142031;--paper:#f5f1e8;--sheet:#fffdf7;--red:#9c322e;--lime:#c8ff52;--line:#d3cbbc;--quiet:#5c656e}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans KR',sans-serif}.page{width:min(960px,calc(100% - 40px));margin:0 auto;padding:28px 0 58px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-bottom:23px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}.mark{position:relative;width:34px;height:34px;border-left:3px solid var(--lime);border-top:3px solid var(--lime);border-bottom:3px solid var(--lime)}.mark:after{content:"";position:absolute;right:0;top:0;width:9px;height:28px;border-right:3px solid var(--lime)}.mark i{position:absolute;right:7px;bottom:5px;width:18px;height:3px;background:var(--red)}.brand span{display:block;color:var(--red);font:500 8px 'IBM Plex Mono',monospace;letter-spacing:.1em}.brand strong{display:block;margin-top:3px;font:700 20px/.9 'Noto Serif KR',serif;letter-spacing:-.06em}.back{padding:9px 11px;border:1px solid var(--ink);background:var(--sheet);color:var(--ink);text-decoration:none;font-size:11px;font-weight:700}.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:end;padding:55px 0 32px}.eyebrow{color:var(--red);font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.1em}.hero h1{margin:12px 0 0;font:900 clamp(34px,6vw,64px)/1.08 'Noto Serif KR',serif;letter-spacing:-.075em}.hero h1 em{color:var(--red);font-style:normal}.hero p{max-width:590px;margin:18px 0 0;color:var(--quiet);font-size:14px;line-height:1.8}.status{padding:18px;border:1px solid var(--ink);background:var(--sheet);box-shadow:7px 7px 0 #d8d0c3}.status[data-state="online"]{box-shadow:7px 7px 0 var(--lime)}.status-label{display:flex;align-items:center;gap:7px;color:#647076;font:500 10px 'IBM Plex Mono',monospace}.dot{width:9px;height:9px;border-radius:50%;background:var(--red)}.status[data-state="online"] .dot{background:#46720e}.status strong{display:block;margin-top:13px;font:700 18px/1.35 'Noto Serif KR',serif}.status p{margin:6px 0 0;color:#59646d;font-size:11px;line-height:1.65}.status button{margin-top:14px;padding:8px 10px;border:1px solid var(--ink);background:var(--ink);color:var(--sheet);font-size:11px;font-weight:700}.safe{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-left:5px solid #46720e;background:#edf1e5;color:#465652;font-size:12px;line-height:1.7}.safe b{color:var(--ink)}.steps{margin-top:28px;border-top:1px solid var(--ink);border-left:1px solid var(--ink);background:var(--sheet)}.step{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:18px;align-items:center;min-height:126px;padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.num{display:grid;place-items:center;width:34px;height:34px;background:var(--ink);color:var(--sheet);font:700 11px 'IBM Plex Mono',monospace}.step h2{margin:0;font:700 19px/1.35 'Noto Serif KR',serif;letter-spacing:-.04em}.step p{max-width:620px;margin:6px 0 0;color:#5d6770;font-size:12px;line-height:1.7}.action{min-width:142px;padding:10px 12px;border:1px solid var(--ink);background:var(--ink);color:var(--sheet);font-size:11px;font-weight:700}.action.secondary{background:var(--sheet);color:var(--ink)}.note{margin-top:26px;padding:18px;border:1px solid var(--ink);background:repeating-linear-gradient(180deg,#f7f2e8 0,#f7f2e8 33px,rgba(156,50,46,.1) 34px)}.note h2{margin:0;font:700 19px 'Noto Serif KR',serif}.note p{margin:8px 0 0;color:#58636d;font-size:12px;line-height:1.75}.toast{position:fixed;right:18px;bottom:18px;max-width:min(360px,calc(100vw - 36px));padding:12px 14px;transform:translateY(20px);background:var(--ink);color:var(--sheet);box-shadow:4px 4px 0 var(--lime);font-size:12px;opacity:0;transition:.2s;pointer-events:none}.toast.show{transform:none;opacity:1}@media(max-width:720px){.page{width:min(100% - 28px,640px);padding-top:18px}.top{padding-bottom:18px}.hero{display:block;padding:39px 0 26px}.hero h1{font-size:39px}.hero p{font-size:13px}.status{margin-top:25px}.step{grid-template-columns:34px 1fr;gap:12px;align-items:start}.step .action{grid-column:2;width:100%;margin-top:2px}.step h2{font-size:17px}.step p{font-size:11px}.safe{font-size:11px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top">
+      <a class="brand" href="./" aria-label="Prompt Mirror로 돌아가기"><span class="mark" aria-hidden="true"><i></i></span><span><span>PERSONAL PROMPT EDITOR</span><strong>Prompt Mirror</strong></span></a>
+      <a class="back" href="./">앱으로 돌아가기 ↗</a>
+    </header>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">NETWORK RECOVERY / STEP BY STEP</span>
+        <h1>연결이 끊겨도<br><em>작업은 남아 있습니다.</em></h1>
+        <p>Prompt Mirror는 원고, 분석 기록, 커스텀 템플릿을 우선 이 기기에 보관합니다. 아래 순서대로 연결을 확인하고, 중요한 기록은 JSON 파일로 한 번 더 보관한 뒤 Drive 동기화를 다시 확인하세요.</p>
+      </div>
+      <aside class="status" id="status" data-state="offline">
+        <div class="status-label"><i class="dot"></i><span id="statusLabel">연결 상태 확인 중</span></div>
+        <strong id="statusTitle">네트워크 상태를 점검하고 있습니다.</strong>
+        <p id="statusText">잠시만 기다려 주세요.</p>
+        <button id="recheck" type="button">연결 다시 확인</button>
+      </aside>
+    </section>
+    <section class="safe"><span style="display:grid;place-items:center;flex:0 0 auto;width:22px;height:22px;background:#46720e;color:#fffdf7;font-weight:700">✓</span><span><b>데이터 안전 상태</b><br>네트워크 오류가 발생해도 현재 브라우저에 저장된 프롬프트 기록과 커스텀 템플릿은 삭제하지 않습니다. 자동 백업은 연결이 복구되기 전까지 Drive의 기존 파일을 덮어쓰지 않습니다.</span></section>
+    <section class="steps" aria-label="네트워크 복구 단계">
+      <article class="step"><span class="num">01</span><div><h2>인터넷 연결을 확인하세요.</h2><p>Wi-Fi 또는 모바일 데이터를 다시 연결한 뒤 ‘연결 다시 확인’을 누르세요. 연결이 돌아오면 Prompt Mirror의 자동 백업은 앱이 열려 있을 때 다시 점검할 수 있습니다.</p></div><button class="action" id="checkAgain" type="button">연결 다시 확인</button></article>
+      <article class="step"><span class="num">02</span><div><h2>현재 기록을 JSON 파일로 보관하세요.</h2><p>기기 교체나 브라우저 초기화가 걱정될 때 사용합니다. 이 페이지는 현재 브라우저에 저장된 분석 히스토리와 커스텀 템플릿만 파일로 내보냅니다.</p></div><button class="action secondary" id="exportLocal" type="button">현재 JSON 보관</button></article>
+      <article class="step"><span class="num">03</span><div><h2>앱에서 Google Drive 동기화를 점검하세요.</h2><p>연결이 돌아온 뒤 앱의 시스템 설정에서 자동 점검 또는 수동 백업을 실행하세요. Google 계정 승인이 필요하면 앱 안에서만 요청됩니다.</p></div><a class="action" href="./#driveSync">동기화 설정 열기</a></article>
+      <article class="step"><span class="num">04</span><div><h2>다른 기기에서 수정했다면 병합 복원을 먼저 하세요.</h2><p>Drive에 바로 덮어쓰지 말고 ‘병합 복원’을 실행하면 ID와 수정 시각을 기준으로 안전하게 기록을 합칩니다. 같은 시각에 다르게 수정한 항목은 이 기기의 값을 보존합니다.</p></div><a class="action secondary" href="./#driveSync">병합 복원으로 이동</a></article>
+    </section>
+    <section class="note"><span class="eyebrow">WHEN TO ASK FOR HELP</span><h2>복구가 계속 실패하면</h2><p>시스템 설정의 동기화 로그와 자동 해결 가이드를 먼저 확인하세요. 인증 만료·권한 오류·기기 간 충돌은 자동 팝업으로 처리하지 않으며, 사용자의 확인을 거쳐야 안전합니다.</p></section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    (function(){
+      const status=document.querySelector('#status'),label=document.querySelector('#statusLabel'),title=document.querySelector('#statusTitle'),text=document.querySelector('#statusText'),toast=document.querySelector('#toast');
+      const notify=message=>{toast.textContent=message;toast.classList.add('show');clearTimeout(notify.timer);notify.timer=setTimeout(()=>toast.classList.remove('show'),2600)};
+      const renderStatus=()=>{const online=navigator.onLine;status.dataset.state=online?'online':'offline';label.textContent=online?'ONLINE / 연결 확인됨':'OFFLINE / 연결이 끊김';title.textContent=online?'인터넷 연결이 확인되었습니다.':'인터넷 연결이 끊겼습니다.';text.textContent=online?'이제 앱으로 돌아가 Drive 자동 점검 또는 수동 백업을 실행할 수 있습니다.':'로컬 데이터는 안전하게 이 기기에 남아 있습니다. 연결 복구 뒤 다음 단계로 진행하세요.'};
+      const check=()=>{renderStatus();notify(navigator.onLine?'연결이 확인되었습니다. 앱에서 동기화를 다시 점검하세요.':'아직 오프라인 상태입니다. Wi-Fi 또는 모바일 데이터를 확인하세요.')};
+      document.querySelector('#recheck').addEventListener('click',check);document.querySelector('#checkAgain').addEventListener('click',check);window.addEventListener('online',()=>{renderStatus();notify('네트워크 연결이 복구되었습니다.')});window.addEventListener('offline',()=>{renderStatus();notify('네트워크 연결이 끊겼습니다. 데이터는 이 기기에 남아 있습니다.')});
+      document.querySelector('#exportLocal').addEventListener('click',()=>{const picked=Object.entries(localStorage).filter(([key])=>/^prompt-mirror.*(history|template)/i.test(key));const values={};picked.forEach(([key,value])=>{try{values[key]=JSON.parse(value)}catch{}});const history=Object.values(values).find(value=>Array.isArray(value)&&value.some(item=>item&&('score' in item||'report' in item)))||[];const templates=Object.values(values).find(value=>Array.isArray(value)&&value.some(item=>item&&('body' in item||'content' in item)))||[];const payload={format:'prompt-mirror-local-recovery',exportedAt:new Date().toISOString(),history,customTemplates:templates};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=`prompt-mirror-recovery-${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(url);notify(`분석 기록 ${history.length}개와 커스텀 템플릿 ${templates.length}개를 JSON 파일로 보관했습니다.`)});
+      renderStatus();
+    })();
+  </script>
+</body>
+</html>
